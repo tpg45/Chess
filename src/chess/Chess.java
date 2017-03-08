@@ -107,11 +107,14 @@ public class Chess {
 				String input = scanner.next();
 				if(isLegal(input))
 					break;
+				else
+					System.out.println("Illegal move, try again");
 			}
-			
-			System.out.println('\n');
-			if(checkmate || stalemate)
+			if(checkmate || stalemate){
 				break;
+			}
+			System.out.println('\n');
+			
 			currentPlayer = !currentPlayer;
 		}
 		scanner.close();
