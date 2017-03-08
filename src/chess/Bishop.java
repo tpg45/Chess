@@ -11,6 +11,8 @@ public class Bishop extends Piece{
 		if(x<0 || x>7 || y<0 || y>7)
 			return false;
 		boolean notBlocked=true;
+		if(Math.abs(this.x-x)!=Math.abs(this.y-y))
+			return false;
 		boolean UR_DL_Diagonal = (x>this.x && y>this.y) || (x<this.x && y<this.y);
 		boolean UL_DR_Diagonal = (x<this.x && y>this.y) || (x>this.x && y<this.y);
 		if(UR_DL_Diagonal){
