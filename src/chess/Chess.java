@@ -40,30 +40,19 @@ public class Chess {
 	public static void move(Piece p1, Piece p2){
 		System.out.println(p1.toString());
 		System.out.println(p2.toString());
-		if(p1 instanceof Pawn){
+		if(p1 instanceof Pawn)
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
-		else if(p1 instanceof Rook){
+		else if(p1 instanceof Rook)
 			board[p2.y][p2.x] = new Rook(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
-		else if(p1 instanceof Knight){
+		else if(p1 instanceof Knight)
 			board[p2.y][p2.x] = new Knight(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
-		else if(p1 instanceof Bishop){
+		else if(p1 instanceof Bishop)
 			board[p2.y][p2.x] = new Bishop(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
-		else if(p1 instanceof Queen){
+		else if(p1 instanceof Queen)
 			board[p2.y][p2.x] = new Queen(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
-		else if(p1 instanceof King){
+		else if(p1 instanceof King)
 			board[p2.y][p2.x] = new King(p2.x, p2.y, p1.color);
-			board[p2.y][p2.x].hasMoved=true;
-		}
+		board[p2.y][p2.x].hasMoved=true;
 		System.out.println(p1.x);
 		System.out.println(p1.y);
 		board[p1.y][p1.x] = (p1.x)%2==(p1.y)%2? new Piece(p1.x,p1.y,'b'):new Piece(p1.x,p1.y,'w');
