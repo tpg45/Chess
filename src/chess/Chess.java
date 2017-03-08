@@ -7,14 +7,14 @@ public class Chess {
 	
 	
 	/**
-	 * checks to see if a space is being threatened by an opposing piece
+	 * Checks to see if a space is being threatened by an opposing piece.
 	 * <p>
 	 * "Threatened" here means that an opposing piece can capture a piece 
-	 * in the current player's possession on the next turn.
-	 * @param x - 
-	 * @param y - 
-	 * @param color - 
-	 * @return boolean, true if space is being threatened, false if not.
+	 * at this location in the current player's possession on the next turn.
+	 * @param x - x-coordinate of space to be checked.
+	 * @param y - y-coordinate of space to be checked.
+	 * @param color - color of the opposing pieces that can threaten the space.
+	 * @return True if space is being threatened, false if not.
 	 */
 	public static boolean threatened(int x, int y, char color){
 		for(int i = 0; i<=7; i++){
@@ -26,17 +26,27 @@ public class Chess {
 		return false;
 	}
 	
-	
-	public static boolean isLegal(String input){
-		//System.out.println(input.charAt(1)-49);
-		//System.out.println(input.charAt(0)-97);
+	/**
+	 * Checks to see if the input move is legal.
+	 * <p>
+	 * Calls canMove on the Piece object located at the position indicated.
+	 * @param input - input buffer from user (contains the move information).
+	 * @return if move is legal, returns true.
+	 */
+	public static boolean isLegal(String input, boolean player){
 		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];
-		//System.out.println(cur.toString());
+		if((player && cur.color == 'b') || (!player && cur.color == 'w'))
+			return false;
 		if(cur.canMove(input.charAt(3)-97 , input.charAt(4)-49))
 			return true;
 		return false;
 	}
 	
+	/**
+	 * Moves a piece according to user input, assumes legality.
+	 * @param p1 - Piece to be moved.
+	 * @param p2 - Piece being moved to.
+	 */
 	public static void move(Piece p1, Piece p2){
 		if(p1 instanceof Pawn)
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
@@ -55,7 +65,9 @@ public class Chess {
 		
 	}
 	
-	
+	/**
+	 * Initializes the board state to the start of a new game.
+	 */
 	public static void initBoard(){
 		
 		board[0][0] = new Rook(0,0,'w');
@@ -94,7 +106,9 @@ public class Chess {
 		board[7][7] = new Rook(7,7,'b');
 	}
 	
-	
+	/**
+	 * Prints the current state of the board in ascii art.
+	 */
 	public static void printBoard(){
 		for(int i = 7;i>=0;i--){
 			for(int j = 0;j<=7;j++){
@@ -140,10 +154,16 @@ public class Chess {
 				}
 				if(input.contains("draw?"))
 					drawRequested = true;
-				if(isLegal(input))
+				if(isLegal(input,currentPlayer))
 					break;
-				else
+				else{
 					System.out.println("Illegal move, try again");
+					if(currentPlayer)
+						System.out.print("White's move: ");
+					else
+						System.out.print("Black's move: ");
+				}
+				
 			}
 			
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
