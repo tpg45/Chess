@@ -59,18 +59,25 @@ public class Chess {
 		
 		initBoard();
 		
+		boolean checkmate = false;
+		boolean stalemate = false;
 		boolean currentPlayer = true;		//true=white
+		
+		Scanner scanner = new Scanner(System.in);
+		
 		while(true){
 			printBoard();
-			Scanner scanner = new Scanner(System.in);
+			
 			if(currentPlayer)
 				System.out.print("White's move: ");
 			else
 				System.out.print("Black's move: ");
 			String input = scanner.next();
 			System.out.println('\n');
+			if(checkmate || stalemate)
+				break;
 		}
-		
+		scanner.close();
 		
 		
 	}
