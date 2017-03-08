@@ -12,9 +12,10 @@ public class Pawn extends Piece{
 			return false;
 		if((color=='w' && y<this.y) || (color=='b' && y>this.y))
 			return false;
-		boolean normalForward = this.x==x && Math.abs(this.y-y)==1;
-		boolean doubleForward = this.x==x && !hasMoved && Math.abs(this.y-y)==2;
-		boolean simpleCapture = Math.abs(this.x-x)==1 && Chess.board[y][x].color!=color;
+		Piece target = Chess.board[y][x];
+		boolean normalForward = this.x==x && Math.abs(this.y-y)==1 && (target.isBlank() || target.color!=color);
+		boolean doubleForward = this.x==x && !hasMoved && Math.abs(this.y-y)==2 && (target.isBlank() || target.color!=color);
+		boolean simpleCapture = Math.abs(this.x-x)==1 && target.color!=color;
 		boolean enPassant = true;
 		return normalForward || doubleForward || simpleCapture || enPassant;
 	}
