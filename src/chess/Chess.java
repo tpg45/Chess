@@ -38,8 +38,6 @@ public class Chess {
 	}
 	
 	public static void move(Piece p1, Piece p2){
-		System.out.println(p1.toString());
-		System.out.println(p2.toString());
 		if(p1 instanceof Pawn)
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
 		else if(p1 instanceof Rook)
@@ -53,8 +51,6 @@ public class Chess {
 		else if(p1 instanceof King)
 			board[p2.y][p2.x] = new King(p2.x, p2.y, p1.color);
 		board[p2.y][p2.x].hasMoved=true;
-		System.out.println(p1.x);
-		System.out.println(p1.y);
 		board[p1.y][p1.x] = (p1.x)%2==(p1.y)%2? new Piece(p1.x,p1.y,'b'):new Piece(p1.x,p1.y,'w');
 		
 	}

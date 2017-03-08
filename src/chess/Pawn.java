@@ -16,7 +16,7 @@ public class Pawn extends Piece{
 		boolean normalForward = this.x==x && Math.abs(this.y-y)==1 && target.isBlank();
 		boolean doubleForward = this.x==x && !hasMoved && Math.abs(this.y-y)==2 && target.isBlank();
 		boolean simpleCapture = Math.abs(this.x-x)==1 && Math.abs(this.y-y)==1 && !target.isBlank() && target.color!=color;
-		boolean enPassant = true;
+		boolean enPassant = false;
 		return normalForward || doubleForward || simpleCapture || enPassant;
 	}
 	
