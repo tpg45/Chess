@@ -28,47 +28,63 @@ public class Chess {
 	
 	
 	public static boolean isLegal(String input){
-		Piece cur = board[input.charAt(1)-48][input.charAt(0)-97];
-		if(cur.canMove(input.charAt(3)-97, input.charAt(4)-48))
+		//System.out.println(input.charAt(1)-49);
+		//System.out.println(input.charAt(0)-97);
+		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];					//correct?
+		//System.out.println(cur.toString());
+		if(cur.canMove(input.charAt(3)-97 , input.charAt(4)-49))					//HELLLLLPPPPPP
 			return true;
 		return false;
 	}
 	
+	public static void move(Piece p1, Piece p2){
+		System.out.println(p1.toString());
+		System.out.println(p2.toString());
+		board[p2.y][p2.x] = p1;
+		board[p2.y][p2.x].x = p1.x;
+		board[p2.y][p2.x].y = p1.y;
+		System.out.println(p1.x);
+		System.out.println(p1.y);
+		board[p1.y][p1.x] = (p1.x)%2==(p1.y)%2? new Piece(p1.x,p1.y,'b'):new Piece(p1.x,p1.y,'w');
+		
+	}
+	
+	
 	public static void initBoard(){
 		
 		board[0][0] = new Rook(0,0,'w');
-		board[0][1] = new Knight(0,1,'w');
-		board[0][2] = new Bishop(0,2,'w');
-		board[0][3] = new Queen(0,3,'w');
-		board[0][4] = new King(0,4,'w');
-		board[0][5] = new Bishop(0,5,'w');
-		board[0][6] = new Knight(0,6,'w');
-		board[0][7] = new Rook(0,7,'w');
+		board[0][1] = new Knight(1,0,'w');
+		board[0][2] = new Bishop(2,0,'w');
+		board[0][3] = new Queen(3,0,'w');
+		board[0][4] = new King(4,0,'w');
+		board[0][5] = new Bishop(5,0,'w');
+		board[0][6] = new Knight(6,0,'w');
+		board[0][7] = new Rook(7,0,'w');
 		
 		for(int i = 0;i<=7;i++){
-			board[1][i] = new Pawn(1,i,'w');
+			board[1][i] = new Pawn(i,1,'w');
 		}
 		
-		for(int i = 2;i<=5;i++){
-			for(int j = 0;j<=7;j++){
+		for(int i = 0;i<=7;i++){
+			for(int j = 2;j<=5;j++){
 				if(i%2==j%2)
-					board[i][j] = new Piece(i,j,'b');
+					board[j][i] = new Piece(i,j,'b');
 				else
-					board[i][j] = new Piece(i,j,'w');
+					board[j][i] = new Piece(i,j,'w');
 			}
 		}
 		
 		for(int i = 0;i<=7;i++){
-			board[6][i] = new Pawn(6,i,'b');
+			board[6][i] = new Pawn(i,6,'b');
 		}
 		
-		board[7][0] = new Rook(7,0,'b');
-		board[7][1] = new Knight(7,1,'b');
-		board[7][2] = new Bishop(7,2,'b');
-		board[7][3] = new Queen(7,3,'b');
-		board[7][4] = new King(7,4,'b');
-		board[7][5] = new Bishop(7,5,'b');
-		board[7][6] = new Knight(7,6,'b');
+		board[7][0] = new Rook(0,7,'b');
+		board[7][1] = new Knight(1,7,'b');
+		board[7][2] = new Bishop(2,7,'b');
+		board[7][3] = new Queen(3,7,'b');
+		board[7][4] = new King(4,7,'b');
+		board[7][5] = new Bishop(5,7,'b');
+		board[7][6] = new Knight(6,7,'b');
 		board[7][7] = new Rook(7,7,'b');
 	}
 	
@@ -104,8 +120,10 @@ public class Chess {
 			else
 				System.out.print("Black's move: ");
 			
+			String input;
+			
 			while(true){
-				String input = scanner.nextLine();
+				input = scanner.nextLine();
 				if(input.equals("resign")){
 					System.out.println((currentPlayer==false? "White":"Black") + " wins");
 					return;
@@ -121,6 +139,9 @@ public class Chess {
 				else
 					System.out.println("Illegal move, try again");
 			}
+			
+			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
+			
 			if(checkmate || stalemate){
 				break;
 			}
