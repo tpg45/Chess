@@ -37,7 +37,7 @@ public class Queen extends Piece{
 		else if(diagonal){
 			boolean UR_DL_Diagonal = (x>this.x && y>this.y) || (x<this.x && y<this.y);
 			if(UR_DL_Diagonal){
-				for(int i = Math.min(x, this.x+1), j = Math.min(y, this.y+1); i<Math.max(x, this.x-1) && j<Math.max(y, this.y-1); i++, j++){
+				for(int i = Math.min(x, this.x+1), j = Math.min(y, this.y+1); i<=Math.max(x, this.x-1) && j<=Math.max(y, this.y-1); i++, j++){
 					if(!Chess.board[j][i].isBlank()){
 						if(i!=x || Chess.board[j][i].color==color){
 							notBlocked=false;
@@ -47,7 +47,7 @@ public class Queen extends Piece{
 				}
 			}
 			else{
-				for(int i = Math.min(x, this.x+1), j = Math.max(y, this.y-1); i<Math.max(x, this.x-1) && j<Math.min(y, this.y+1); i++, j--){
+				for(int i = Math.min(x, this.x+1), j = Math.max(y, this.y-1); i<=Math.max(x, this.x-1) && j<=Math.min(y, this.y+1); i++, j--){
 					if(!Chess.board[j][i].isBlank()){
 						if(i!=x || Chess.board[j][i].color==color){
 							notBlocked=false;
