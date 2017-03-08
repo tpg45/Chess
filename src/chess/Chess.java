@@ -5,6 +5,7 @@ import java.util.Scanner;
 public class Chess {
 	static Piece[][] board = new Piece[8][8];
 	
+	
 	/**
 	 * checks to see if a space is being threatened by an opposing piece
 	 * <p>
@@ -24,6 +25,15 @@ public class Chess {
 		}
 		return false;
 	}
+	
+	
+	public static boolean isLegal(String input){
+		Piece cur = board[input.charAt(1)-48][input.charAt(0)-97];
+		if(cur.canMove(input.charAt(3)-97, input.charAt(4)-48))
+			return true;
+		return false;
+	}
+	
 	public static void initBoard(){
 		
 		board[0][0] = new Rook(0,0,'w');
@@ -62,6 +72,7 @@ public class Chess {
 		board[7][7] = new Rook(7,7,'b');
 	}
 	
+	
 	public static void printBoard(){
 		for(int i = 7;i>=0;i--){
 			for(int j = 0;j<=7;j++){
@@ -72,6 +83,7 @@ public class Chess {
 		}
 		System.out.println(" a  b  c  d  e  f  g  h\n");
 	}
+	
 	
 	public static void main(String[] args) {
 		
@@ -90,11 +102,13 @@ public class Chess {
 				System.out.print("White's move: ");
 			else
 				System.out.print("Black's move: ");
-			/*while(true){
+			
+			while(true){
 				String input = scanner.next();
-				isLegal(input);
+				if(isLegal(input))
+					break;
 			}
-			*/
+			
 			System.out.println('\n');
 			if(checkmate || stalemate)
 				break;
