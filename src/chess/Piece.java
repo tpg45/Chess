@@ -17,6 +17,10 @@ public class Piece{
 		return false;
 	}
 	
+	public boolean isBlank(){
+		return toString().charAt(0)==' ' || toString().charAt(0)=='#';
+	}
+	
 	public String toString(){
 		return color=='w' ? "  ":"##";
 	}
