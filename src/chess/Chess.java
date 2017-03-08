@@ -30,9 +30,9 @@ public class Chess {
 	public static boolean isLegal(String input){
 		//System.out.println(input.charAt(1)-49);
 		//System.out.println(input.charAt(0)-97);
-		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];					//correct?
+		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];
 		//System.out.println(cur.toString());
-		if(cur.canMove(input.charAt(3)-97 , input.charAt(4)-49))					//HELLLLLPPPPPP
+		if(cur.canMove(input.charAt(3)-97 , input.charAt(4)-49))
 			return true;
 		return false;
 	}
