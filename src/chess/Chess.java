@@ -92,6 +92,7 @@ public class Chess {
 		boolean checkmate = false;
 		boolean stalemate = false;
 		boolean currentPlayer = true;		//true=white
+		boolean drawRequested = false;
 		
 		Scanner scanner = new Scanner(System.in);
 		
@@ -104,7 +105,17 @@ public class Chess {
 				System.out.print("Black's move: ");
 			
 			while(true){
-				String input = scanner.next();
+				String input = scanner.nextLine();
+				if(input.equals("resign")){
+					System.out.println((currentPlayer==false? "White":"Black") + " wins");
+					return;
+				}
+				if(drawRequested && input.equals("draw")){
+					System.out.println("Draw");
+					return;
+				}
+				if(input.contains("draw?"))
+					drawRequested = true;
 				if(isLegal(input))
 					break;
 				else
