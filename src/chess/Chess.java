@@ -5,6 +5,25 @@ import java.util.Scanner;
 public class Chess {
 	static Piece[][] board = new Piece[8][8];
 	
+	/**
+	 * checks to see if a space is being threatened by an opposing piece
+	 * <p>
+	 * "Threatened" here means that an opposing piece can capture a piece 
+	 * in the current player's possession on the next turn.
+	 * @param x - 
+	 * @param y - 
+	 * @param color - 
+	 * @return boolean, true if space is being threatened, false if not.
+	 */
+	public static boolean threatened(int x, int y, char color){
+		for(int i = 0; i<=7; i++){
+			for (int j = 0; j<=7; j++){
+				if(board[i][j].canMove(x, y) && board[i][j].color == color)
+					return true;
+			}
+		}
+		return false;
+	}
 	public static void initBoard(){
 		
 		board[0][0] = new Rook(0,0,'w');
@@ -20,8 +39,8 @@ public class Chess {
 			board[1][i] = new Pawn(1,i,'w');
 		}
 		
-		for(int i = 0;i<=7;i++){
-			for(int j = 2;j<=5;j++){
+		for(int i = 2;i<=5;i++){
+			for(int j = 0;j<=7;j++){
 				if(i%2==j%2)
 					board[i][j] = new Piece(i,j,'b');
 				else
@@ -51,8 +70,7 @@ public class Chess {
 			
 			System.out.println(i+1);
 		}
-		System.out.println(" a b c d e f g h");
-		System.out.println();
+		System.out.println(" a  b  c  d  e  f  g  h\n");
 	}
 	
 	public static void main(String[] args) {
@@ -72,10 +90,15 @@ public class Chess {
 				System.out.print("White's move: ");
 			else
 				System.out.print("Black's move: ");
-			String input = scanner.next();
+			/*while(true){
+				String input = scanner.next();
+				isLegal(input);
+			}
+			*/
 			System.out.println('\n');
 			if(checkmate || stalemate)
 				break;
+			currentPlayer = !currentPlayer;
 		}
 		scanner.close();
 		
