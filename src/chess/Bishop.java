@@ -12,6 +12,7 @@ public class Bishop extends Piece{
 			return false;
 		boolean notBlocked=true;
 		boolean UR_DL_Diagonal = (x>this.x && y>this.y) || (x<this.x && y<this.y);
+		boolean UL_DR_Diagonal = (x<this.x && y>this.y) || (x>this.x && y<this.y);
 		if(UR_DL_Diagonal){
 			for(int i = Math.min(x, this.x+1), j = Math.min(y, this.y+1); i<Math.max(x, this.x-1) && j<Math.max(y, this.y-1); i++, j++){
 				if(!Chess.board[j][i].isBlank()){
@@ -22,7 +23,7 @@ public class Bishop extends Piece{
 				}
 			}
 		}
-		else{
+		else if(UL_DR_Diagonal){
 			for(int i = Math.min(x, this.x+1), j = Math.max(y, this.y-1); i<Math.max(x, this.x-1) && j<Math.min(y, this.y+1); i++, j--){
 				if(!Chess.board[j][i].isBlank()){
 					if(i!=x || Chess.board[j][i].color==color){
@@ -32,6 +33,8 @@ public class Bishop extends Piece{
 				}
 			}
 		}
+		else
+			return false;
 		return (this.x!=x || this.y!=y) && notBlocked;
 	}
 	
