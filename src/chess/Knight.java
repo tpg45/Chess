@@ -8,7 +8,11 @@ public class Knight extends Piece{
 	
 	@Override
 	public boolean canMove(int x, int y){
-		return (Math.abs(this.x-x)==2 || Math.abs(this.y-y)==2) && (Math.abs(this.x-x)==1 || Math.abs(this.y-y)==1);
+		if(x<0 || x>7 || y<0 || y>7)
+			return false;
+		boolean onPath = (Math.abs(this.x-x)==2 || Math.abs(this.y-y)==2) && (Math.abs(this.x-x)==1 || Math.abs(this.y-y)==1);
+		boolean notBlocked = Chess.board[y][x].color!=color;
+		return onPath && notBlocked;
 	}
 	
 	@Override

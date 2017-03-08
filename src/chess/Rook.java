@@ -8,7 +8,35 @@ public class Rook extends Piece{
 	
 	@Override
 	public boolean canMove(int x, int y){
-		return (this.x!=x || this.y!=y) && (this.x==x || this.y==y);
+		if(x<0 || x>7 || y<0 || y>7)
+			return false;
+		boolean horizontal = this.y==y;
+		boolean vertical = this.x==x;
+		boolean notBlocked = true;
+		if(horizontal){
+			for(int i = Math.min(this.x+1,x); i<=Math.max(this.x-1, x); i++){
+				if(!Chess.board[y][i].isBlank()){
+					if(i!=x || Chess.board[y][i].color==color){
+						notBlocked=false;
+						break;
+					}
+				}
+			}
+		}
+		else if(vertical){
+			for(int i = Math.min(this.y+1,y); i<=Math.max(this.y-1, y); i++){
+				if(!Chess.board[i][x].isBlank()){
+					if(i!=y || Chess.board[i][x].color==color){
+						notBlocked=false;
+						break;
+					}
+				}
+			}
+		}
+		else{
+			return false;
+		}
+		return (this.x!=x || this.y!=y) && notBlocked;
 	}
 	
 	@Override
