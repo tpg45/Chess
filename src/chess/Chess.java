@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class Chess {
 	static Piece[][] board = new Piece[8][8];
-	
+	static int turnCounter = 0;
 	
 	/**
 	 * Checks to see if a space is being threatened by an opposing piece.
@@ -48,8 +48,12 @@ public class Chess {
 	 * @param p2 - Piece being moved to.
 	 */
 	public static void move(Piece p1, Piece p2){
-		if(p1 instanceof Pawn)
+		turnCounter++;
+		if(p1 instanceof Pawn){
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
+			((Pawn)board[p2.y][p2.x]).lastMovedTurn = turnCounter;
+			((Pawn)board[p2.y][p2.x]).lastMoveWasDouble = Math.abs(p1.y-p2.y)==2 && p1.x==p2.x;
+		}
 		else if(p1 instanceof Rook)
 			board[p2.y][p2.x] = new Rook(p2.x, p2.y, p1.color);
 		else if(p1 instanceof Knight)
