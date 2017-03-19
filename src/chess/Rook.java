@@ -1,11 +1,29 @@
 package chess;
 
+/**
+ * Represents a rook piece
+ * @author Nick Prezioso, Tim Gassaway
+ *
+ */
 public class Rook extends Piece{
-
+	
+	/**
+	 * Creates a rook piece
+	 * @param x - column number
+	 * @param y - row number
+	 * @param color - white or black
+	 */
 	public Rook(int x, int y, char color) {
 		super(x, y, color);
 	}
 	
+	/**
+	 * Checks if this piece can legally move to position (x,y).
+	 * <p>
+	 * Rooks move any number of spaces in cardinal directions.
+	 * @param x - column to move to
+	 * @param y - row to move to
+	 */
 	@Override
 	public boolean canMove(int x, int y){
 		if(x<0 || x>7 || y<0 || y>7)

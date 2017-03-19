@@ -1,11 +1,29 @@
 package chess;
 
+/**
+ * Represents a king piece
+ * @author Nick Prezioso, Tim Gassaway
+ *
+ */
 public class King extends Piece{
 	
+	/**
+	 * Creates a king piece
+	 * @param x - column number
+	 * @param y - row number
+	 * @param color - white or black
+	 */
 	public King(int x, int y, char color) {
 		super(x, y, color);
 	}
 	
+	/**
+	 * Checks if this piece can legally move to position (x,y).
+	 * <p>
+	 * Kings may move one space in any direction.
+	 * @param x - column to move to
+	 * @param y - row to move to
+	 */
 	@Override
 	public boolean canMove(int x, int y){
 		if(x<0 || x>7 || y<0 || y>7)
@@ -54,11 +72,19 @@ public class King extends Piece{
 		}
 	}
 	
+	/**
+	 * Checks to see if the king is in check
+	 * @return true if in check; false otherwise
+	 */
 	public boolean isChecked(){
 		char enemyColor = color=='w' ? 'b':'w';
 		return Chess.threatened(x, y, enemyColor);
 	}
 	
+	/**
+	 * Checks to see if the king is checkmated
+	 * @return true if checkmated; false otherwise
+	 */
 	public boolean isCheckMated(){
 		char enemyColor = color=='w' ? 'b':'w';
 		//check for legal moves

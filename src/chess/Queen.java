@@ -1,11 +1,29 @@
 package chess;
 
+/**
+ * Represents a queen piece
+ * @author Nick Prezioso, Tim Gassaway
+ *
+ */
 public class Queen extends Piece{
-
+	
+	/**
+	 * Creates a queen piece
+	 * @param x - column number
+	 * @param y - row number
+	 * @param color - white or black
+	 */
 	public Queen(int x, int y, char color) {
 		super(x, y, color);
 	}
 	
+	/**
+	 * Checks if this piece can legally move to position (x,y).
+	 * <p>
+	 * Queens may move any number of spaces in either a cardinal or a diagonal direction.
+	 * @param x - column to move to
+	 * @param y - row to move to
+	 */
 	@Override
 	public boolean canMove(int x, int y){
 		if(x<0 || x>7 || y<0 || y>7)

@@ -1,11 +1,29 @@
 package chess;
 
+/**
+ * Represents a bishop piece
+ * @author Nick Prezioso, Tim Gassaway
+ *
+ */
 public class Bishop extends Piece{
-
+	
+	/**
+	 * Creates a bishop piece
+	 * @param x - column number
+	 * @param y - row number
+	 * @param color - white or black
+	 */
 	public Bishop(int x, int y, char color) {
 		super(x, y, color);
 	}
 	
+	/**
+	 * Checks if this piece can legally move to position (x,y).
+	 * <p>
+	 * Knights may move any number of spaces in diagonal directions.
+	 * @param x - column to move to
+	 * @param y - row to move to
+	 */
 	@Override
 	public boolean canMove(int x, int y){
 		if(x<0 || x>7 || y<0 || y>7)
