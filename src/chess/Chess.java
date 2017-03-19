@@ -2,6 +2,11 @@ package chess;
 
 import java.util.Scanner;
 
+/**
+ * 
+ * @author Tim Gassaway, Nick Prezioso
+ *
+ */
 public class Chess {
 	static Piece[][] board = new Piece[8][8];
 	static int turnCounter = 0;
@@ -39,6 +44,21 @@ public class Chess {
 			return false;
 		if(cur.canMove(input.charAt(3)-97 , input.charAt(4)-49))
 			return true;
+		return false;
+	}
+	
+	public static boolean isCheck(boolean player){
+		char color = 'b';
+		if(player)
+			color = 'w';
+
+		for (Piece[] row : board){
+			for (Piece p : row){
+				if(p.color != color && p instanceof King){
+					return ((King) p).isChecked();
+				}
+			}
+		}
 		return false;
 	}
 	
@@ -129,6 +149,7 @@ public class Chess {
 		
 		initBoard();
 		
+		boolean check = false;
 		boolean checkmate = false;
 		boolean stalemate = false;
 		boolean currentPlayer = true;		//true=white
@@ -139,6 +160,8 @@ public class Chess {
 		while(true){
 			printBoard();
 			
+			if(check)
+				System.out.println("Check");
 			if(currentPlayer)
 				System.out.print("White's move: ");
 			else
@@ -172,7 +195,9 @@ public class Chess {
 			
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
+			check = isCheck(currentPlayer);
 			if(checkmate || stalemate){
+				System.out.println("Checkmate");
 				break;
 			}
 			System.out.println('\n');
