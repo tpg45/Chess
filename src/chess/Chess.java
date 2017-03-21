@@ -78,7 +78,7 @@ public class Chess {
 	 * Checks to see if the input move is legal.
 	 * <p>
 	 * Calls canMove on the Piece object located at the position indicated.
-	 * @param input - input buffer from user (contains the move information).
+	 * @param player - current player
 	 * @return if move is legal, returns true.
 	 */
 	public static boolean isLegal(boolean player){

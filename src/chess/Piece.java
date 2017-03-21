@@ -42,6 +42,7 @@ public class Piece{
 	 * Blank Pieces cannot move.
 	 * @param x - column to move to
 	 * @param y - row to move to
+	 * @return false for blank pieces
 	 */
 	public boolean canMove(int x, int y){
 		return false;
