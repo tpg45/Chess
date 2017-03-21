@@ -28,12 +28,13 @@ public class King extends Piece{
 	public boolean canMove(int x, int y){
 		if(x<0 || x>7 || y<0 || y>7)
 			return false;
+		if(Chess.board[y][x].toString().charAt(0)==color)
+			return false;
 		boolean normalMove = (this.x!=x || this.y!=y) && (this.x-x<=1 && this.x-x>=-1) && (this.y-y<=1 && this.y-y>=-1);
 		if(normalMove){
-			boolean noBlocks = Chess.board[y][x].toString().charAt(0)!=color;
 			char enemyColor = color=='w' ? 'b':'w';
 			boolean wouldCheck = Chess.threatened(x, y, enemyColor);
-			return normalMove && noBlocks && !wouldCheck;
+			return normalMove && !wouldCheck;
 		}
 		else{
 			boolean castle = !hasMoved && (this.y==0 || this.y==7) && this.y==y && Math.abs(this.x-x)==2;

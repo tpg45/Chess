@@ -24,7 +24,14 @@ public class Chess {
 	public static boolean threatened(int x, int y, char color){
 		for(int i = 0; i<=7; i++){
 			for (int j = 0; j<=7; j++){
-				if(board[i][j].canMove(x, y) && board[i][j].color == color)
+				Piece test = board[i][j];
+				if(test.color != color){
+					continue;
+				}
+				else if(test instanceof King && Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1){
+					return true;
+				}
+				else if(test.canMove(x, y))
 					return true;
 			}
 		}
