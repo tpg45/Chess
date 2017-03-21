@@ -54,12 +54,61 @@ public class Chess {
 		return false;
 	}
 	
-	public static boolean isCheck(boolean player){
+	public static Piece[][] cloneBoard(Piece[][] board){
+		Piece[][] clone = new Piece[8][8];
+		for(int i=0;i<=7;i++){
+			for (int j=0;j<=7;j++){
+				if(board[i][j] instanceof Pawn){
+					clone[i][j] = new Pawn(j, i, board[i][j].color);
+					((Pawn)clone[i][j]).lastMovedTurn = ((Pawn)board[i][j]).lastMovedTurn;
+					((Pawn)clone[i][j]).lastMoveWasDouble = ((Pawn)board[i][j]).lastMoveWasDouble;
+				}
+				else if(board[i][j] instanceof Rook)
+					clone[i][j] = new Rook(j, i, board[i][j].color);
+				else if(board[i][j] instanceof Knight)
+					clone[i][j] = new Knight(j, i, board[i][j].color);
+				else if(board[i][j] instanceof Bishop)
+					clone[i][j] = new Bishop(j, i, board[i][j].color);
+				else if(board[i][j] instanceof Queen)
+					clone[i][j] = new Queen(j, i, board[i][j].color);
+				else if(board[i][j] instanceof King)
+					clone[i][j] = new King(j, i, board[i][j].color);
+				else
+					clone[i][j] = new Piece(j, i, board[i][j].color);
+			}
+		}
+		return clone;
+	}
+	
+	public static boolean isCheckmate(boolean player, Piece[][] currentBoard){
+		char color = 'b';
+		if(player)
+			color = 'w';
+		Piece[][] testBoard = cloneBoard(currentBoard);
+		for (Piece[] row : testBoard){
+			for (Piece p : row){
+				for (int i=0;i<=7;i++){
+					for (int j=0;j<=7;j++){
+						if(p.canMove(j, i)){
+							move(p, testBoard[j][i]);
+							if(!isCheck(player, testBoard))
+								return false;
+						}
+						testBoard = cloneBoard(currentBoard);
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	public static boolean isCheck(boolean player, Piece[][] currentBoard){
 		char color = 'b';
 		if(player)
 			color = 'w';
 
-		for (Piece[] row : board){
+		for (Piece[] row : currentBoard){
 			for (Piece p : row){
 				if(p.color != color && p instanceof King){
 					return ((King) p).isChecked();
@@ -202,7 +251,11 @@ public class Chess {
 			
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
-			check = isCheck(currentPlayer);
+			check = isCheck(currentPlayer, board);
+			checkmate = isCheckmate(currentPlayer, board);
+			if(checkmate){
+				System.out.println(currentPlayer+" win's");
+			}
 			if(checkmate || stalemate){
 				System.out.println("Checkmate");
 				break;
