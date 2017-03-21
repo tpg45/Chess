@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -55,58 +56,215 @@ public class Chess {
 		return false;
 	}
 	
-	public static Piece[][] cloneBoard(Piece[][] board){
-		Piece[][] clone = new Piece[8][8];
-		for(int i=0;i<=7;i++){
-			for (int j=0;j<=7;j++){
-				if(board[i][j] instanceof Pawn){
-					clone[i][j] = new Pawn(j, i, board[i][j].color);
-					((Pawn)clone[i][j]).lastMovedTurn = ((Pawn)board[i][j]).lastMovedTurn;
-					((Pawn)clone[i][j]).lastMoveWasDouble = ((Pawn)board[i][j]).lastMoveWasDouble;
+	public static boolean isCheckmate(boolean player){
+		if(!isCheck(player))
+			return false;
+		//king cannot move
+		char enemyColor = player ? 'b':'w';
+		Piece k = new Piece(0, 0, 'w');	//temporary value
+		for (Piece[] row : board){
+			for (Piece p : row){
+				if(p.color == enemyColor && p instanceof King){
+					k = (King)p;
+					boolean canMove =
+							k.canMove(k.x, k.y+1)	||
+							k.canMove(k.x+1, k.y)	||
+							k.canMove(k.x+1, k.y+1)	||
+							k.canMove(k.x, k.y-1)	||
+							k.canMove(k.x-1, k.y)	||
+							k.canMove(k.x-1, k.y-1)	||
+							k.canMove(k.x-1, k.y+1)	||
+							k.canMove(k.x+1, k.y-1);
+					if(canMove)
+						return false;
+					break;
 				}
-				else if(board[i][j] instanceof Rook)
-					clone[i][j] = new Rook(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Knight)
-					clone[i][j] = new Knight(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Bishop)
-					clone[i][j] = new Bishop(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Queen)
-					clone[i][j] = new Queen(j, i, board[i][j].color);
-				else if(board[i][j] instanceof King)
-					clone[i][j] = new King(j, i, board[i][j].color);
-				else
-					clone[i][j] = new Piece(j, i, board[i][j].color);
 			}
 		}
-		return clone;
-	}
-	
-	public static boolean isCheckmate(boolean player, Piece[][] currentBoard){
-		Piece[][] testBoard = cloneBoard(currentBoard);
-		for (Piece[] row : testBoard){
+		//cannot capture or block
+		//get threatening piece
+		for (Piece[] row : board){
 			for (Piece p : row){
-				for (int i=0;i<=7;i++){
-					for (int j=0;j<=7;j++){
-						if(p.canMove(j, i)){
-							move(p, testBoard[j][i]);
-							if(!isCheck(player, testBoard))
-								return false;
+				if(p.color == enemyColor && p.canMove(k.x, k.y)){
+					//get all spaces through which it threatens king (including its own space)
+					ArrayList<Integer> xList = new ArrayList<Integer>();
+					ArrayList<Integer> yList = new ArrayList<Integer>();
+					if(p instanceof Queen){
+						//cardinal
+						if((p.x!=k.x && p.y==k.y) || (p.x==k.x && p.y!=k.y)){
+							//horizontal
+							if(p.x!=k.x){
+								//on left
+								if(p.x<k.x){
+									for(int i=p.x; i<k.x; i++){
+										xList.add(i);
+										yList.add(p.y);
+									}
+								}
+								//on right
+								else{
+									for(int i=p.x; i>k.x; i--){
+										xList.add(i);
+										yList.add(p.y);
+									}
+								}
+							}
+							//vertical
+							else{
+								//below
+								if(p.y<k.y){
+									for(int i=p.y; i<k.y; i++){
+										xList.add(p.x);
+										yList.add(i);
+									}
+								}
+								//above
+								else{
+									for(int i=p.y; i>k.y; i--){
+										xList.add(p.x);
+										yList.add(i);
+									}
+								}
+							}
 						}
-						testBoard = cloneBoard(currentBoard);
+						//diagonal
+						else{
+							//above on left
+							if(p.x<k.x && p.y>k.y){
+								for(int x=p.x, y=p.y; x<k.x && y>k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x++;
+									y--;
+								}
+							}
+							//above on right
+							else if(p.x>k.x && p.y>k.y){
+								for(int x=p.x, y=p.y; x>k.x && y>k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x--;
+									y--;
+								}
+							}
+							//below on left
+							else if(p.x<k.x && p.y<k.y){
+								for(int x=p.x, y=p.y; x<k.x && y<k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x++;
+									y++;
+								}
+							}
+							//below on right
+							else{
+								for(int x=p.x, y=p.y; x>k.x && y<k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x--;
+									y++;
+								}
+							}
+						}
+					}
+					else if(p instanceof Bishop){
+						//above on left
+						if(p.x<k.x && p.y>k.y){
+							for(int x=p.x, y=p.y; x<k.x && y>k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x++;
+								y--;
+							}
+						}
+						//above on right
+						else if(p.x>k.x && p.y>k.y){
+							for(int x=p.x, y=p.y; x>k.x && y>k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x--;
+								y--;
+							}
+						}
+						//below on left
+						else if(p.x<k.x && p.y<k.y){
+							for(int x=p.x, y=p.y; x<k.x && y<k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x++;
+								y++;
+							}
+						}
+						//below on right
+						else{
+							for(int x=p.x, y=p.y; x>k.x && y<k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x--;
+								y++;
+							}
+						}
+					}
+					else if(p instanceof Rook){
+						//horizontal
+						if(p.x!=k.x){
+							//on left
+							if(p.x<k.x){
+								for(int i=p.x; i<k.x; i++){
+									xList.add(i);
+									yList.add(p.y);
+								}
+							}
+							//on right
+							else{
+								for(int i=p.x; i>k.x; i--){
+									xList.add(i);
+									yList.add(p.y);
+								}
+							}
+						}
+						//vertical
+						else{
+							//below
+							if(p.y<k.y){
+								for(int i=p.y; i<k.y; i++){
+									xList.add(p.x);
+									yList.add(i);
+								}
+							}
+							//above
+							else{
+								for(int i=p.y; i>k.y; i--){
+									xList.add(p.x);
+									yList.add(i);
+								}
+							}
+						}
+					}
+					else if(p instanceof Knight){
+						xList.add(p.x);
+						yList.add(p.y);
+					}
+					else if(p instanceof Pawn){
+						xList.add(p.x);
+						yList.add(p.y);
+					}
+					//see if there is a piece of our color that threatens any of those spaces
+					char color = player ? 'w':'b' ;
+					for(int i=0; i<xList.size(); i++){
+						if(threatened(xList.get(i), yList.get(i), color))
+							return false;
 					}
 				}
+				break;
 			}
 		}
-		
 		return true;
 	}
 	
-	public static boolean isCheck(boolean player, Piece[][] currentBoard){
-		char color = 'b';
-		if(player)
-			color = 'w';
-
-		for (Piece[] row : currentBoard){
+	public static boolean isCheck(boolean player){
+		char color = player? 'w':'b';
+		for (Piece[] row : board){
 			for (Piece p : row){
 				if(p.color != color && p instanceof King){
 					return ((King) p).isChecked();
@@ -265,11 +423,12 @@ public class Chess {
 			
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
-			check = isCheck(currentPlayer, board);
-			//checkmate = isCheckmate(currentPlayer, board);
-			/*if(checkmate){
-				System.out.println(currentPlayer+" win's");
-			}*/
+			check = isCheck(currentPlayer);
+			checkmate = isCheckmate(currentPlayer);
+			if(checkmate){
+				String winner = currentPlayer ? "White":"Black";
+				System.out.println(winner+" wins");
+			}
 			if(checkmate || stalemate){
 				System.out.println("Checkmate");
 				break;

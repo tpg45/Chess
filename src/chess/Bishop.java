@@ -44,7 +44,7 @@ public class Bishop extends Piece{
 			}
 		}
 		else if(UL_DR_Diagonal){
-			for(int i = Math.min(x, this.x+1), j = Math.max(y, this.y-1); i<=Math.max(x, this.x-1) && j<=Math.min(y, this.y+1); i++, j--){
+			for(int i = Math.min(x, this.x+1), j = Math.max(y, this.y-1); i<=Math.max(x, this.x-1) && j>=Math.min(y, this.y+1); i++, j--){
 				if(!Chess.board[j][i].isBlank()){
 					if(i!=x || Chess.board[j][i].color==color){
 						notBlocked=false;
