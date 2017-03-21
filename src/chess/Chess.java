@@ -82,9 +82,6 @@ public class Chess {
 	}
 	
 	public static boolean isCheckmate(boolean player, Piece[][] currentBoard){
-		char color = 'b';
-		if(player)
-			color = 'w';
 		Piece[][] testBoard = cloneBoard(currentBoard);
 		for (Piece[] row : testBoard){
 			for (Piece p : row){
@@ -269,10 +266,10 @@ public class Chess {
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
 			check = isCheck(currentPlayer, board);
-			checkmate = isCheckmate(currentPlayer, board);
-			if(checkmate){
+			//checkmate = isCheckmate(currentPlayer, board);
+			/*if(checkmate){
 				System.out.println(currentPlayer+" win's");
-			}
+			}*/
 			if(checkmate || stalemate){
 				System.out.println("Checkmate");
 				break;
