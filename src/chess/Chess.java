@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class Chess {
 	static Piece[][] board = new Piece[8][8];
 	static int turnCounter = 0;
+	static String input;
 	
 	/**
 	 * Checks to see if a space is being threatened by an opposing piece.
@@ -46,7 +47,7 @@ public class Chess {
 	 * @param input - input buffer from user (contains the move information).
 	 * @return if move is legal, returns true.
 	 */
-	public static boolean isLegal(String input, boolean player){
+	public static boolean isLegal(boolean player){
 		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];
 		if((player && cur.color == 'b') || (!player && cur.color == 'w'))
 			return false;
@@ -123,6 +124,8 @@ public class Chess {
 	 */
 	public static void move(Piece p1, Piece p2){
 		if(p1 instanceof Pawn){
+			if ((p1.color == 'w' && p1.y == 7) || (p1.color == 'b' && p1.y == 0))
+				promote(p1);
 			boolean isEnPassant = ((Pawn) p1).isLegalEnPassant(p2.x, p2.y);
 			int oldY = p1.y;
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
@@ -157,6 +160,16 @@ public class Chess {
 		board[p2.y][p2.x].hasMoved=true;
 		board[p1.y][p1.x] = (p1.x)%2==(p1.y)%2? new Piece(p1.x,p1.y,'b'):new Piece(p1.x,p1.y,'w');
 		turnCounter++;
+	}
+	
+	public static void promote(Piece p){
+		char choice;
+		if(input.length() == 6){
+			choice = input.charAt(5);
+		}
+		else{
+			board[p.y][p.x] = new Queen(p.x, p.y, p.color);
+		}
 	}
 	
 	/**
@@ -237,7 +250,7 @@ public class Chess {
 			else
 				System.out.print("Black's move: ");
 			
-			String input;
+			
 			
 			while(true){
 				input = scanner.nextLine();
@@ -251,7 +264,7 @@ public class Chess {
 				}
 				if(input.contains("draw?"))
 					drawRequested = true;
-				if(isLegal(input,currentPlayer))
+				if(isLegal(currentPlayer))
 					break;
 				else{
 					System.out.println("Illegal move, try again");
@@ -266,10 +279,10 @@ public class Chess {
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
 			check = isCheck(currentPlayer, board);
-			//checkmate = isCheckmate(currentPlayer, board);
-			/*if(checkmate){
-				System.out.println(currentPlayer+" win's");
-			}*/
+			checkmate = isCheckmate(currentPlayer, board);
+			if(checkmate){
+				System.out.println(currentPlayer+" wins");
+			}
 			if(checkmate || stalemate){
 				System.out.println("Checkmate");
 				break;
