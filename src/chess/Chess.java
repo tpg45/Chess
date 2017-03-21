@@ -31,11 +31,17 @@ public class Chess {
 					continue;
 				}
 				else if(test instanceof King){
-					if(Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1)
+					if(test.color==color && Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1)
 						return true;
 				}
-				else if(test.color==color && test.canMove(x, y))
+				else if(test.color==color && test.canMove(x, y)){
+					if(test instanceof Pawn){
+						if(((Pawn) test).isLegalDoubleMove(x, y)){
+							continue;
+						}
+					}
 					return true;
+				}
 			}
 		}
 		return false;
