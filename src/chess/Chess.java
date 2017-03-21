@@ -20,20 +20,47 @@ public class Chess {
 	 * @param x - x-coordinate of space to be checked.
 	 * @param y - y-coordinate of space to be checked.
 	 * @param color - color of the opposing pieces that can threaten the space.
-	 * @return True if space is being threatened, false if not.
+	 * @return true if space is being threatened, false if not.
 	 */
 	public static boolean threatened(int x, int y, char color){
 		for(int i = 0; i<=7; i++){
 			for (int j = 0; j<=7; j++){
 				Piece test = board[i][j];
-				if(test.color != color){
+				if(!board[y][x].isBlank() && test.color != color){
 					continue;
 				}
 				else if(test instanceof King){
 					if(Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1)
 						return true;
 				}
-				else if(test.canMove(x, y))
+				else if(test.color==color && test.canMove(x, y))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks to see if a space is being threatened by an opposing piece that isn't a king.
+	 * <p>
+	 * "Threatened" here means that an opposing piece can capture a piece 
+	 * at this location in the current player's possession on the next turn.
+	 * @param x - x-coordinate of space to be checked.
+	 * @param y - y-coordinate of space to be checked.
+	 * @param color - color of the opposing pieces that can threaten the space.
+	 * @return true if space is being threatened, false if not.
+	 */
+	public static boolean threatenedByNonKings(int x, int y, char color){
+		for(int i = 0; i<=7; i++){
+			for (int j = 0; j<=7; j++){
+				Piece test = board[i][j];
+				if(!board[y][x].isBlank() && test.color != color){
+					continue;
+				}
+				else if(test instanceof King){
+					continue;
+				}
+				else if(test.color==color && test.canMove(x, y))
 					return true;
 			}
 		}
@@ -56,15 +83,22 @@ public class Chess {
 		return false;
 	}
 	
+	/**
+	 * Checks if a move by the player put the opponent in checkmate
+	 * @param player - the player who moved the piece in question
+	 * @return whether the player has put the opponent in checkmate
+	 */
 	public static boolean isCheckmate(boolean player){
 		if(!isCheck(player))
 			return false;
 		//king cannot move
-		char enemyColor = player ? 'b':'w';
+		char enemyColor = player ? 'w':'b';
+		char color = player ? 'b':'w' ;
 		Piece k = new Piece(0, 0, 'w');	//temporary value
+		boolean b = false;
 		for (Piece[] row : board){
 			for (Piece p : row){
-				if(p.color == enemyColor && p instanceof King){
+				if(p.color == color && p instanceof King){
 					k = (King)p;
 					boolean canMove =
 							k.canMove(k.x, k.y+1)	||
@@ -75,14 +109,19 @@ public class Chess {
 							k.canMove(k.x-1, k.y-1)	||
 							k.canMove(k.x-1, k.y+1)	||
 							k.canMove(k.x+1, k.y-1);
-					if(canMove)
+					if(canMove){
 						return false;
+					}
+					b=true;
 					break;
 				}
 			}
+			if(b)
+				break;
 		}
 		//cannot capture or block
 		//get threatening piece
+		b = false;
 		for (Piece[] row : board){
 			for (Piece p : row){
 				if(p.color == enemyColor && p.canMove(k.x, k.y)){
@@ -250,18 +289,25 @@ public class Chess {
 						yList.add(p.y);
 					}
 					//see if there is a piece of our color that threatens any of those spaces
-					char color = player ? 'w':'b' ;
 					for(int i=0; i<xList.size(); i++){
-						if(threatened(xList.get(i), yList.get(i), color))
+						if(threatenedByNonKings(xList.get(i), yList.get(i), color))
 							return false;
 					}
+					b=true;
+					break;
 				}
-				break;
 			}
+			if(b)
+				break;
 		}
 		return true;
 	}
 	
+	/**
+	 * Checks if a move by the player put the opponent in check
+	 * @param player - the player who moved the piece in question
+	 * @return whether the player has put the opponent in check
+	 */
 	public static boolean isCheck(boolean player){
 		char color = player? 'w':'b';
 		for (Piece[] row : board){
@@ -359,7 +405,7 @@ public class Chess {
 	}
 	
 	/**
-	 * Prints the current state of the board in ascii art.
+	 * Prints the current state of the board in ASCII art.
 	 */
 	public static void printBoard(){
 		for(int i = 7;i>=0;i--){
@@ -372,7 +418,10 @@ public class Chess {
 		System.out.println(" a  b  c  d  e  f  g  h\n");
 	}
 	
-	
+	/**
+	 * Creates and displays an ASCII game of chess
+	 * @param args - command line arguments
+	 */
 	public static void main(String[] args) {
 		
 		initBoard();
