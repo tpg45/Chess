@@ -28,8 +28,9 @@ public class Chess {
 				if(test.color != color){
 					continue;
 				}
-				else if(test instanceof King && Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1){
-					return true;
+				else if(test instanceof King){
+					if(Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1)
+						return true;
 				}
 				else if(test.canMove(x, y))
 					return true;
@@ -94,8 +95,19 @@ public class Chess {
 			board[p2.y][p2.x] = new Bishop(p2.x, p2.y, p1.color);
 		else if(p1 instanceof Queen)
 			board[p2.y][p2.x] = new Queen(p2.x, p2.y, p1.color);
-		else if(p1 instanceof King)
+		else if(p1 instanceof King){
+			boolean castle = (p1.y==0 || p1.y==7) && p1.y==p2.y && Math.abs(p1.x-p2.x)==2;
+			if(castle){
+				boolean queenSide = p2.x<p1.x;
+				if(queenSide){
+					move(board[p1.y][0], board[p1.y][p1.x-1]);
+				}
+				else{
+					move(board[p1.y][7], board[p1.y][p1.x+1]);
+				}
+			}
 			board[p2.y][p2.x] = new King(p2.x, p2.y, p1.color);
+		}
 		board[p2.y][p2.x].hasMoved=true;
 		board[p1.y][p1.x] = (p1.x)%2==(p1.y)%2? new Piece(p1.x,p1.y,'b'):new Piece(p1.x,p1.y,'w');
 		turnCounter++;
