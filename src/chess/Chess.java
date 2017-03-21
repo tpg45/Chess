@@ -328,8 +328,6 @@ public class Chess {
 	 */
 	public static void move(Piece p1, Piece p2){
 		if(p1 instanceof Pawn){
-			if ((p1.color == 'w' && p1.y == 7) || (p1.color == 'b' && p1.y == 0))
-				promote(p1);
 			boolean isEnPassant = ((Pawn) p1).isLegalEnPassant(p2.x, p2.y);
 			int oldY = p1.y;
 			board[p2.y][p2.x] = new Pawn(p2.x, p2.y, p1.color);
@@ -339,6 +337,8 @@ public class Chess {
 				char color = oldY%2 == p2.x%2 ? 'b':'w';
 				board[oldY][p2.x] = new Piece(oldY, p2.x, color);
 			}
+			if ((p1.color == 'w' && p2.y == 7) || (p1.color == 'b' && p2.y == 0))
+				promote(board[p2.y][p2.x]);
 		}
 		else if(p1 instanceof Rook)
 			board[p2.y][p2.x] = new Rook(p2.x, p2.y, p1.color);
@@ -368,8 +368,16 @@ public class Chess {
 	
 	public static void promote(Piece p){
 		char choice;
-		if(input.length() == 6){
-			choice = input.charAt(5);
+		if(input.length() == 7){
+			choice = input.charAt(6);
+			if(choice == 'N')
+				board[p.y][p.x] = new Knight(p.x, p.y, p.color);
+			if(choice == 'R')
+				board[p.y][p.x] = new Rook(p.x, p.y, p.color);
+			if(choice == 'B')
+				board[p.y][p.x] = new Bishop(p.x, p.y, p.color);
+			if(choice == 'Q')
+				board[p.y][p.x] = new Queen(p.x, p.y, p.color);
 		}
 		else{
 			board[p.y][p.x] = new Queen(p.x, p.y, p.color);
@@ -456,8 +464,6 @@ public class Chess {
 				System.out.print("White's move: ");
 			else
 				System.out.print("Black's move: ");
-			
-			
 			
 			while(true){
 				input = scanner.nextLine();
