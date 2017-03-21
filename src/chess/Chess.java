@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -20,20 +21,47 @@ public class Chess {
 	 * @param x - x-coordinate of space to be checked.
 	 * @param y - y-coordinate of space to be checked.
 	 * @param color - color of the opposing pieces that can threaten the space.
-	 * @return True if space is being threatened, false if not.
+	 * @return true if space is being threatened, false if not.
 	 */
 	public static boolean threatened(int x, int y, char color){
 		for(int i = 0; i<=7; i++){
 			for (int j = 0; j<=7; j++){
 				Piece test = board[i][j];
-				if(test.color != color){
+				if(!board[y][x].isBlank() && test.color != color){
 					continue;
 				}
 				else if(test instanceof King){
 					if(Math.abs(test.x-x)<=1 && Math.abs(test.y-y)<=1)
 						return true;
 				}
-				else if(test.canMove(x, y))
+				else if(test.color==color && test.canMove(x, y))
+					return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks to see if a space is being threatened by an opposing piece that isn't a king.
+	 * <p>
+	 * "Threatened" here means that an opposing piece can capture a piece 
+	 * at this location in the current player's possession on the next turn.
+	 * @param x - x-coordinate of space to be checked.
+	 * @param y - y-coordinate of space to be checked.
+	 * @param color - color of the opposing pieces that can threaten the space.
+	 * @return true if space is being threatened, false if not.
+	 */
+	public static boolean threatenedByNonKings(int x, int y, char color){
+		for(int i = 0; i<=7; i++){
+			for (int j = 0; j<=7; j++){
+				Piece test = board[i][j];
+				if(!board[y][x].isBlank() && test.color != color){
+					continue;
+				}
+				else if(test instanceof King){
+					continue;
+				}
+				else if(test.color==color && test.canMove(x, y))
 					return true;
 			}
 		}
@@ -56,58 +84,234 @@ public class Chess {
 		return false;
 	}
 	
-	public static Piece[][] cloneBoard(Piece[][] board){
-		Piece[][] clone = new Piece[8][8];
-		for(int i=0;i<=7;i++){
-			for (int j=0;j<=7;j++){
-				if(board[i][j] instanceof Pawn){
-					clone[i][j] = new Pawn(j, i, board[i][j].color);
-					((Pawn)clone[i][j]).lastMovedTurn = ((Pawn)board[i][j]).lastMovedTurn;
-					((Pawn)clone[i][j]).lastMoveWasDouble = ((Pawn)board[i][j]).lastMoveWasDouble;
-				}
-				else if(board[i][j] instanceof Rook)
-					clone[i][j] = new Rook(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Knight)
-					clone[i][j] = new Knight(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Bishop)
-					clone[i][j] = new Bishop(j, i, board[i][j].color);
-				else if(board[i][j] instanceof Queen)
-					clone[i][j] = new Queen(j, i, board[i][j].color);
-				else if(board[i][j] instanceof King)
-					clone[i][j] = new King(j, i, board[i][j].color);
-				else
-					clone[i][j] = new Piece(j, i, board[i][j].color);
-			}
-		}
-		return clone;
-	}
-	
-	public static boolean isCheckmate(boolean player, Piece[][] currentBoard){
-		Piece[][] testBoard = cloneBoard(currentBoard);
-		for (Piece[] row : testBoard){
+	/**
+	 * Checks if a move by the player put the opponent in checkmate
+	 * @param player - the player who moved the piece in question
+	 * @return whether the player has put the opponent in checkmate
+	 */
+	public static boolean isCheckmate(boolean player){
+		if(!isCheck(player))
+			return false;
+		//king cannot move
+		char enemyColor = player ? 'w':'b';
+		char color = player ? 'b':'w' ;
+		Piece k = new Piece(0, 0, 'w');	//temporary value
+		boolean b = false;
+		for (Piece[] row : board){
 			for (Piece p : row){
-				for (int i=0;i<=7;i++){
-					for (int j=0;j<=7;j++){
-						if(p.canMove(j, i)){
-							move(p, testBoard[j][i]);
-							if(!isCheck(player, testBoard))
-								return false;
-						}
-						testBoard = cloneBoard(currentBoard);
+				if(p.color == color && p instanceof King){
+					k = (King)p;
+					boolean canMove =
+							k.canMove(k.x, k.y+1)	||
+							k.canMove(k.x+1, k.y)	||
+							k.canMove(k.x+1, k.y+1)	||
+							k.canMove(k.x, k.y-1)	||
+							k.canMove(k.x-1, k.y)	||
+							k.canMove(k.x-1, k.y-1)	||
+							k.canMove(k.x-1, k.y+1)	||
+							k.canMove(k.x+1, k.y-1);
+					if(canMove){
+						return false;
 					}
+					b=true;
+					break;
 				}
 			}
+			if(b)
+				break;
 		}
-		
+		//cannot capture or block
+		//get threatening piece
+		b = false;
+		for (Piece[] row : board){
+			for (Piece p : row){
+				if(p.color == enemyColor && p.canMove(k.x, k.y)){
+					//get all spaces through which it threatens king (including its own space)
+					ArrayList<Integer> xList = new ArrayList<Integer>();
+					ArrayList<Integer> yList = new ArrayList<Integer>();
+					if(p instanceof Queen){
+						//cardinal
+						if((p.x!=k.x && p.y==k.y) || (p.x==k.x && p.y!=k.y)){
+							//horizontal
+							if(p.x!=k.x){
+								//on left
+								if(p.x<k.x){
+									for(int i=p.x; i<k.x; i++){
+										xList.add(i);
+										yList.add(p.y);
+									}
+								}
+								//on right
+								else{
+									for(int i=p.x; i>k.x; i--){
+										xList.add(i);
+										yList.add(p.y);
+									}
+								}
+							}
+							//vertical
+							else{
+								//below
+								if(p.y<k.y){
+									for(int i=p.y; i<k.y; i++){
+										xList.add(p.x);
+										yList.add(i);
+									}
+								}
+								//above
+								else{
+									for(int i=p.y; i>k.y; i--){
+										xList.add(p.x);
+										yList.add(i);
+									}
+								}
+							}
+						}
+						//diagonal
+						else{
+							//above on left
+							if(p.x<k.x && p.y>k.y){
+								for(int x=p.x, y=p.y; x<k.x && y>k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x++;
+									y--;
+								}
+							}
+							//above on right
+							else if(p.x>k.x && p.y>k.y){
+								for(int x=p.x, y=p.y; x>k.x && y>k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x--;
+									y--;
+								}
+							}
+							//below on left
+							else if(p.x<k.x && p.y<k.y){
+								for(int x=p.x, y=p.y; x<k.x && y<k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x++;
+									y++;
+								}
+							}
+							//below on right
+							else{
+								for(int x=p.x, y=p.y; x>k.x && y<k.y; ){
+									xList.add(x);
+									yList.add(y);
+									x--;
+									y++;
+								}
+							}
+						}
+					}
+					else if(p instanceof Bishop){
+						//above on left
+						if(p.x<k.x && p.y>k.y){
+							for(int x=p.x, y=p.y; x<k.x && y>k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x++;
+								y--;
+							}
+						}
+						//above on right
+						else if(p.x>k.x && p.y>k.y){
+							for(int x=p.x, y=p.y; x>k.x && y>k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x--;
+								y--;
+							}
+						}
+						//below on left
+						else if(p.x<k.x && p.y<k.y){
+							for(int x=p.x, y=p.y; x<k.x && y<k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x++;
+								y++;
+							}
+						}
+						//below on right
+						else{
+							for(int x=p.x, y=p.y; x>k.x && y<k.y; ){
+								xList.add(x);
+								yList.add(y);
+								x--;
+								y++;
+							}
+						}
+					}
+					else if(p instanceof Rook){
+						//horizontal
+						if(p.x!=k.x){
+							//on left
+							if(p.x<k.x){
+								for(int i=p.x; i<k.x; i++){
+									xList.add(i);
+									yList.add(p.y);
+								}
+							}
+							//on right
+							else{
+								for(int i=p.x; i>k.x; i--){
+									xList.add(i);
+									yList.add(p.y);
+								}
+							}
+						}
+						//vertical
+						else{
+							//below
+							if(p.y<k.y){
+								for(int i=p.y; i<k.y; i++){
+									xList.add(p.x);
+									yList.add(i);
+								}
+							}
+							//above
+							else{
+								for(int i=p.y; i>k.y; i--){
+									xList.add(p.x);
+									yList.add(i);
+								}
+							}
+						}
+					}
+					else if(p instanceof Knight){
+						xList.add(p.x);
+						yList.add(p.y);
+					}
+					else if(p instanceof Pawn){
+						xList.add(p.x);
+						yList.add(p.y);
+					}
+					//see if there is a piece of our color that threatens any of those spaces
+					for(int i=0; i<xList.size(); i++){
+						if(threatenedByNonKings(xList.get(i), yList.get(i), color))
+							return false;
+					}
+					b=true;
+					break;
+				}
+			}
+			if(b)
+				break;
+		}
 		return true;
 	}
 	
-	public static boolean isCheck(boolean player, Piece[][] currentBoard){
-		char color = 'b';
-		if(player)
-			color = 'w';
-
-		for (Piece[] row : currentBoard){
+	/**
+	 * Checks if a move by the player put the opponent in check
+	 * @param player - the player who moved the piece in question
+	 * @return whether the player has put the opponent in check
+	 */
+	public static boolean isCheck(boolean player){
+		char color = player? 'w':'b';
+		for (Piece[] row : board){
 			for (Piece p : row){
 				if(p.color != color && p instanceof King){
 					return ((King) p).isChecked();
@@ -214,7 +418,7 @@ public class Chess {
 	}
 	
 	/**
-	 * Prints the current state of the board in ascii art.
+	 * Prints the current state of the board in ASCII art.
 	 */
 	public static void printBoard(){
 		for(int i = 7;i>=0;i--){
@@ -227,7 +431,10 @@ public class Chess {
 		System.out.println(" a  b  c  d  e  f  g  h\n");
 	}
 	
-	
+	/**
+	 * Creates and displays an ASCII game of chess
+	 * @param args - command line arguments
+	 */
 	public static void main(String[] args) {
 		
 		initBoard();
@@ -278,10 +485,11 @@ public class Chess {
 			
 			move(board[input.charAt(1)-49][input.charAt(0)-97], board[input.charAt(4)-49][input.charAt(3)-97]);
 			
-			check = isCheck(currentPlayer, board);
-			checkmate = isCheckmate(currentPlayer, board);
+			check = isCheck(currentPlayer);
+			checkmate = isCheckmate(currentPlayer);
 			if(checkmate){
-				System.out.println(currentPlayer+" wins");
+				String winner = currentPlayer ? "White":"Black";
+				System.out.println(winner+" wins");
 			}
 			if(checkmate || stalemate){
 				System.out.println("Checkmate");
