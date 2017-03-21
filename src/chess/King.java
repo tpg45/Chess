@@ -52,13 +52,10 @@ public class King extends Piece{
 				}
 				if(!Chess.board[y][7].hasMoved)
 					rookNotMoved=true;
-				if(Chess.threatened(7, y, enemyColor)){
-					notBlockedOrThreatened=false;
-				}
 			}
 			//Queen's side castle
 			else{
-				for(int i = 1; i<this.x-1; i++){
+				for(int i = 2; i<this.x-1; i++){
 					if(!Chess.board[y][i].isBlank() || Chess.threatened(x, y, enemyColor)){
 						notBlockedOrThreatened=false;
 						break;
@@ -66,9 +63,6 @@ public class King extends Piece{
 				}
 				if(!Chess.board[y][0].hasMoved)
 					rookNotMoved=true;
-				if(Chess.threatened(0, y, enemyColor)){
-					notBlockedOrThreatened=false;
-				}
 			}
 			return castle && rookNotMoved && notBlockedOrThreatened;
 		}

@@ -76,6 +76,8 @@ public class Chess {
 	 * @return if move is legal, returns true.
 	 */
 	public static boolean isLegal(boolean player){
+		if(input.equals("draw"))
+			return false;
 		Piece cur = board[input.charAt(1)-49][input.charAt(0)-97];
 		if((player && cur.color == 'b') || (!player && cur.color == 'w'))
 			return false;
@@ -310,15 +312,38 @@ public class Chess {
 	 * @return whether the player has put the opponent in check
 	 */
 	public static boolean isCheck(boolean player){
-		char color = player? 'w':'b';
+		char color = player? 'b':'w';
 		for (Piece[] row : board){
 			for (Piece p : row){
-				if(p.color != color && p instanceof King){
+				if(p.color == color && p instanceof King){
 					return ((King) p).isChecked();
 				}
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Checks for stalemate.
+	 * @param player - the current player
+	 * @return whether the given player is in stalemate
+	 */
+	public static boolean isStalemate(boolean player){
+		char color = player? 'b':'w';
+		for (Piece[] row : board){
+			for (Piece p : row){
+				if(p.isBlank() || p.color!=color)
+					continue;
+				for(int i=0; i<7; i++){
+					for(int j=0; j<7; j++){
+						Piece test = board[i][j];
+						if(p.canMove(test.x, test.y))
+							return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -366,6 +391,12 @@ public class Chess {
 		turnCounter++;
 	}
 	
+	/**
+	 * Promotes a pawn to the chosen piece based on input.
+	 * <p>
+	 * Defaults to queen if unspecified.
+	 * @param p the piece to be promoted
+	 */
 	public static void promote(Piece p){
 		char choice;
 		if(input.length() == 7){
@@ -444,7 +475,6 @@ public class Chess {
 	 * @param args - command line arguments
 	 */
 	public static void main(String[] args) {
-		
 		initBoard();
 		
 		boolean check = false;
@@ -475,6 +505,7 @@ public class Chess {
 					System.out.println("Draw");
 					return;
 				}
+				drawRequested=false;
 				if(input.contains("draw?"))
 					drawRequested = true;
 				if(isLegal(currentPlayer))
@@ -493,12 +524,16 @@ public class Chess {
 			
 			check = isCheck(currentPlayer);
 			checkmate = isCheckmate(currentPlayer);
+			stalemate = isStalemate(currentPlayer);
 			if(checkmate){
+				System.out.println("Checkmate");
 				String winner = currentPlayer ? "White":"Black";
 				System.out.println(winner+" wins");
+				break;
 			}
-			if(checkmate || stalemate){
-				System.out.println("Checkmate");
+			else if(stalemate){
+				System.out.println("Stalemate");
+				System.out.println("Draw");
 				break;
 			}
 			System.out.println('\n');
@@ -506,7 +541,5 @@ public class Chess {
 			currentPlayer = !currentPlayer;
 		}
 		scanner.close();
-		
-		
 	}
 }
