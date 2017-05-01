@@ -36,7 +36,7 @@ public class Chess {
 				}
 				else if(test.color==color && test.canMove(x, y)){
 					if(test instanceof Pawn){
-						if(((Pawn) test).isLegalDoubleMove(x, y)){
+						if(((Pawn) test).x == x){
 							continue;
 						}
 					}
